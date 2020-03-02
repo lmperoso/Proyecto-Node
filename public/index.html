@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
+    <script>
+      $(function () {
+        var socket = io();
+        var nombre = prompt('usuario');
+        socket.emit('usuario', nombre)
+        $('form').submit(function(e){
+          e.preventDefault(); // prevents page reloading
+          socket.emit('mensaje', $('#m').val());
+          $('#m').val('');
+          return false;
+        });
+
+
+        //escuchas
+        socket.on('mensaje', function(data){
+          if(data.usuario==nombre){
+            $('#messages').append($('<li style="text-align:right; ">').text(data.usuario+':  '+data.mensaje));
+
+          }else{
+            $('#messages').append($('<li style="text-align:left; ">').text(data.usuario+':  '+data.mensaje));
+          }
+        });
+        socket.on('usuario', function(nombre) {
+          $('#messages').append($('<li>').text(nombre + ' se ha conectado'));
+        })
+        socket.on('contador', function(contador) {
+          $('#barra').text('Numeros de usuarios conectados:'+ contador+'');
+        })
+      });
+    </script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font: 13px Helvetica, Arial;
+      }
+      form {
+        background: #000;
+        padding: 3px;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
+      form input {
+        border: 0;
+        padding: 10px;
+        width: 90%;
+        margin-right: 0.5%;
+      }
+      form button {
+        width: 9%;
+        background: rgb(130, 224, 255);
+        border: none;
+        padding: 10px;
+      }
+      #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      #messages li {
+        padding: 5px 10px;
+      }
+      #messages li:nth-child(odd) {
+        background: #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <!-- <input type="file" id="subir" /> -->
+    
+    <form action="">
+      
+      <input id="m" autocomplete="off" /><button>Send</button>
+     <div id="barra" style="color:white"></div>>
+       <p><button type="file" id="file" >File</button></p>
+      </div>
+      
+    </form>
+    
+  </body>
+</html>
